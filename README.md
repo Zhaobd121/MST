@@ -1,138 +1,116 @@
-# Clustering Index and Query Tool
+# MST (Set) + MST-vector (Vector)
 
-This C++ tool builds indexes and performs set clustering (either **exact** or **density-based**) using a fast, scalable algorithm.
+This repository provides two C++ implementations of an MST-based indexing and querying/clustering pipeline:
+
+- **MST** (folder: `MST/`) — designed for **set / bipartite-style datasets**.  
+  In this version, **epsilon is provided as a fraction**: `epsilon_num epsilon_denom`.
+
+- **MST-vector** (folder: `MST-vector/`) — designed for **vector datasets**.  
+  In this version, **epsilon is provided as a floating-point number**: `epsilon`.
+
+Both versions generally follow the same workflow:
+1) **Index** the dataset  
+2) **Query** using either `exact` or `density`
 
 ---
 
-## 🔧 Requirements
+## Prerequisites
 
-- C++17 compatible compiler
-- Linux or macOS environment
-- Dataset in the correct format (see below)
+- A C++ compiler (e.g., `g++`)
+- `make`
+
+> If you encounter a stack overflow due to deep recursion, run:
+> ```bash
+> ulimit -s unlimited
+> ```
 
 ---
 
-## ⚙️ Compilation
+## Project Layout
 
-Use the provided Makefile:
+- `MST/` — set dataset version
+- `MST-vector/` — vector dataset version
 
+---
+
+## Build
+
+Build each component in its own directory.
+
+### Build MST (set version)
 ```bash
-make clean && make
-```
+cd MST
+make
 
----
+### Build MST-vector (vector version)
+```bash
+cd MST-vector
+make
 
-## 📁 Dataset Format
 
-The dataset represents a set. It must follow this format:
+The executable name depends on your Makefile (often program).
+If yours is different, replace ./program in the commands below.
 
-```
+Part 1 — MST (Set / Bipartite Dataset)
+Input Format (Set Dataset)
+
+Example format:
+
 <n1> <n2> <m>
 <left_object_1>:<right_1> <right_2> ...
-<left_object_2>:<right_1> <right_2> ...
+<left_object_2>:<right_1> <right_5> ...
 ...
-```
 
-- `n1`: number of unique objects on the **left**
-- `n2`: number of unique objects on the **right**
-- `m`: total number of pairs (connections)
-- Each of the next `n1` lines describes a left object’s connections
-- Left objects **must be numbered from `1` to `n1`** without gaps
 
-**Example:**
+The first line provides dataset meta information.
 
-```
-5 6 8
-1:10
-2:11 12
-3:13 14 15
-4:16
-5:17
-```
+Each subsequent line describes a left object and its associated right objects.
 
----
-
-## 🚀 Usage
-
-### 🏗️ Indexing Mode
-
-Builds the binary core index files.
-
-```bash
+Usage (Set Version)
+1) Build index
 ./program index <miu> <input_file>
-```
 
-**Arguments:**
-- `<miu>`: size threshold used for index construction
-- `<input_file>`: path to the dataset file
-
-**Output:**
-
-```
-index/<input_file_stem>_<miu>/
-├── FCI.bin
-├── NCI.bin
-└── DNCI.bin
-```
-
-Each binary file stores edges as 16 bytes:  
-`(u:int32, v:int32, num:int32, denom:int32)`
-
----
-
-### 🔍 Query Mode
-
-Runs clustering using either exact or density-based methods:
-
-```bash
+2) Query
 ./program query <exact|density> <miu> <epsilon_num> <epsilon_denom> <input_file>
-```
 
-**Arguments:**
-- `<exact|density>`: query type
-- `<miu>`: size threshold used in the index
-- `<epsilon_num>` and `<epsilon_denom>`: threshold as a fraction ε = num / denom
-- `<input_file>`: path to dataset
 
-**Output:**
+miu: algorithm threshold
 
-Results are saved to:
+epsilon_num epsilon_denom: epsilon as a fraction
+Example: 1 10 means epsilon = 0.1
 
-```
-result/<input_file_stem>_<method>_<miu>_<epsilon_num>_<epsilon_denom>
-```
+Part 2 — MST-vector (Vector Dataset)
+Input Format (Vector Dataset)
 
----
+Example format:
 
-## 📄 Output Format
+<n>
+<vector_0>:<value_0_1> <value_0_2> ...
+<vector_1>:<value_1_1> <value_1_2> ...
+...
 
-Each cluster is printed like this:
 
-```
-Cluster rep: 123
-  Cores: 123 124 125
-  Non-Cores: 200 201
-```
+The first line is the number of vectors.
 
----
+Each following line contains a vector identifier and its values.
 
-## ⚠️ Notes
+Usage (Vector Version)
+1) Build index
+./program index <miu> <input_file>
 
-- You **must run index mode first** before querying.
-- If your dataset is large, the algorithm may hit the system stack size limit due to recursion when building the KRT.
-- To avoid stack overflow, run this **before execution**:
+2) Query
+./program query <exact|density> <miu> <epsilon> <input_file>
 
-```bash
-ulimit -s unlimited
-```
 
----
+epsilon: a floating-point value (e.g., 0.1)
 
-## 🧪 Example
+Output
 
-```bash
-./program index 3 dataset/actor_movie_set.txt
-./program index 7 dataset/actor_movie_set.txt
-./program query exact 3 2 3 dataset/actor_movie_set.txt
-./program query exact 7 1 2 dataset/actor_movie_set.txt
-```
+The output format depends on the mode (exact / density) and the implementation.
+Please refer to the code and comments for details if you need to parse results programmatically.
+
+Notes
+
+If you want GitHub to display this documentation on the repository homepage, keep this file at the repository root as README.md.
+
+Keep subfolder READMEs if you want module-level docs; otherwise, this integrated README is enough.
