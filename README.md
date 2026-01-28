@@ -1,6 +1,6 @@
 # MST (Set) + MST-vector (Vector)
 
-This repository provides two C++ implementations of an MST-based indexing and querying/clustering pipeline:
+This repository provides two C++ implementations of an MST indexing and querying pipeline:
 
 - **MST** (folder: `MST/`) — designed for **set / bipartite-style datasets**.  
   In this version, **epsilon is provided as a fraction**: `epsilon_num epsilon_denom`.
