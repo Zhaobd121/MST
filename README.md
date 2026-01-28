@@ -2,8 +2,8 @@
 
 This repository provides two C++ implementations of an MST indexing and querying pipeline:
 
-- **MST** (folder: `MST/`) — designed for **set / bipartite-style datasets**.  
-  In this version, **epsilon is provided as a fraction**: `epsilon_num epsilon_denom`.
+- **MST** (folder: `MST/`) — designed for **set datasets**.  
+  In this version, **epsilon is provided as a fraction**: `<epsilon_num> <epsilon_denom>`.
 
 - **MST-vector** (folder: `MST-vector/`) — designed for **vector datasets**.  
   In this version, **epsilon is provided as a floating-point number**: `epsilon`.
@@ -51,7 +51,7 @@ make
 The executable name depends on your Makefile (often program).
 If yours is different, replace ./program in the commands below.
 
-Part 1 — MST (Set / Bipartite Dataset)
+Part 1 — MST (Set Dataset)
 Input Format (Set Dataset)
 
 Example format:
